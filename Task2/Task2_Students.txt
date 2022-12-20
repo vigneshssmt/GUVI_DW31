@@ -1,0 +1,30 @@
+> use taskdb
+> db.createCollection("students")
+> mongoimport --db taskdb --collection students --file Users/vigneshys/Documents/Guvi/Tasks/Task2/students.json
+> db.students.find().sort({'exam': -1, 'quiz': -1, 'homework': -1}).limit(1).pretty()
+> var passMark = 40
+> var averageExamScore = db.students.aggregate([{$group: {_id: null, avg: {$avg: "$exam"}}}]).toArray()[0].avg
+> db.students.find({exam: {$lt: averageExamScore}, exam: {$lt: passMark}})
+> db.students.updateMany({exam: {$lt: passMark}}, {$set: {exam: "fail"}})
+> db.students.updateMany({exam: {$gte: passMark}}, {$set: {exam: "pass"}})
+> db.students.updateMany({quiz: {$lt: passMark}}, {$set: {quiz: "fail"}})
+> db.students.updateMany({quiz: {$gte: passMark}}, {$set: {quiz: "pass"}})
+> db.students.updateMany({homework: {$lt: passMark}}, {$set: {homework: "fail"}})
+> db.students.updateMany({homework: {$gte: passMark}}, {$set: {homework: "pass"}})
+> var total = db.students.aggregate([{$group:{_id:null, total:{$sum: “$exam + $quiz + $homework”}}}])
+> var total = db.students.aggregate([{$group:{_id:null, avg:{$sum: “$exam + $quiz + $homework”}}}])
+> db.totals.insert({total: total.total, avg:avg.avg})
+> db.createCollection("below_average_above_pass")
+> db.students.find({exam: {$lt: averageExamScore}, exam: {$gte: passMark}, quiz: {$gte: passMark}, homework: {$gte: passMark}}).forEach(function(doc) {
+    db.below_average_above_pass.insert(doc)
+})
+> db.createCollection(“below”_fail_mark”)
+> db.students.find({exam: {$lt: passMark}, quiz: {$lt: passMark}, homework: {$lt: passMark}}).forEach(function(doc) {
+    db.below_fail_mark(doc)
+})
+> db.createCollection(“above_fail_mark”)
+> db.students.find({exam: {$gt: passMark}, quiz: {$gt: passMark}, homework: {$gt: passMark}}).forEach(function(doc) {
+    db.above_fail_mark(doc)
+})
+
+
